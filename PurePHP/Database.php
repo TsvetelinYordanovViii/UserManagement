@@ -1,91 +1,100 @@
 <?php
+include "User.php";
 
 class Database {
     private $conn;
 
-    public Database ($servername, $username, $password){
-        //Temporary. Maybe.
-        $servername = "localhost";
-        $username = "root";
-        $password = "";
+    public function connect ($servername, $database, $username, $password){
+        try{
+            $this->conn = new PDO("mysql:host=$servername; dbname=$database", $username, $password);
+    
+            $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-        $conn = new PDO("mysql:host=$servername; dbname=usermanagement", $username, $password);
+            //echo "Connection successful.";
+        } catch(PDOException $e){
+            echo "Connection failed: " . $e->getMessage();
+        }
     }
 
-    public CreateTable($tableName, $tableRows, $database, $conn){
-        $name = filter_var($tableName, FILTER_SANITIZE_STRING);
-        $rows = filter_var($tableRows, FILTER_SANITIZE_STRING);
-        $database = filter_var($database, FILTER_SANITIZE_STRING);
+    public function createRecord($tableColumns, $newValues){
+        $columns = filter_var($tableColumns, FILTER_SANITIZE_STRING);
+        $values = filter_var($newValues, FILTER_SANITIZE_STRING);
 
+        //The column names will be predefined, so there is no security concern here.
         $createQuery = "
-            CREATE TABLE :database.:tableName (
-                :tableRows
+            INSERT INTO users (
+                ($columns) VALUES (:values)
             )
         ";
 
-        $create = $conn->prepare($createQuery);
-        $create->bindParam(':database', $database);
-        $create->bindParam(':tableName', $name);
-        $create->bindParam(':tableRows', $rows);
-        $create->execute();
+        $createStm = $this->conn->prepare($createQuery);
+        $createStm->bindParam(':values', $values);
+        $createStm->execute();
     }
 
-    public ReadTable($tableName, $tableRows, $conn){
-        $name = filter_var($tableName, FILTER_SANITIZE_STRING);
-        if (strlen($tableRows) > 0){
-            $rows = filter_var($tableRows, FILTER_SANITIZE_STRING);
+    public function readRecord($tableColumn, $whereColumn, $whereValue){
+        //If no column is set, provide the * character.
+        if (strlen($tableColumn) > 0){
+            $columns = filter_var($tableColumn, FILTER_SANITIZE_STRING);
         }
         else{
-            $rows = "*";
+            $columns = "*";
         }
 
-        $selectQuery = "
-            SELECT :tableRows FROM :tableName
-        ";
+        //If a where clause is defined, create a query with a where clause
+        //else create a simple select query.
+        if (strlen($whereColumn) > 0 && strlen($whereValue) > 0){
+            $checkedColumn = filter_var($whereColumn, FILTER_SANITIZE_STRING);
+            $checkedValue = filter_var($whereValue, FILTER_SANITIZE_STRING);
 
-        $select = $conn->prepare($selectQuery);
-        $select->bindParam(':tableName', $name);
-        $select->bindParam(':tableRows', $rows);
-        $select->execute();
+            $selectQuery = "
+            SELECT $columns FROM users
+            WHERE $checkedColumn = :checkedValue
+            ";
+            $selectStm = $this->conn->prepare($selectQuery);
+            $selectStm->bindParam(':checkedValue', $checkedValue);
+        }
+        else{
+            $selectQuery = "
+            SELECT $columns FROM users
+            ";
+            $selectStm = $this->conn->prepare($selectQuery);
+        }
+
+        $selectStm->execute();
         
-        return $select->fetchAll(PDO::FETCH_ASSOC);
+        return $selectStm->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public UpdateTable($tableName, $tableRow, $tableValue, $rowId){
-        $name = filter_var($tableName, FILTER_SANITIZE_STRING);
-        $row = filter_var($tableRow, FILTER_SANITIZE_STRING);
+    public function updateRecord($tableColumn, $tableValue, $rowId){
+        $column = filter_var($tableColumn, FILTER_SANITIZE_STRING);
         $value = filter_var($tableValue, FILTER_SANITIZE_STRING);
         $id = filter_var($rowId, FILTER_SANITIZE_STRING);
-
+        
+        //The column names will be predefined, so there is no security concern here.
         $selectQuery = "
-            UPDATE :tableName
-            SET :tableRow = :tableValue
+            UPDATE users
+            SET $column = :tableValue
             WHERE id = :id
         ";
 
-        $select = $conn->prepare($selectQuery);
-        $select->bindParam(':tableName', $name);
-        $select->bindParam(':tableRow', $row);
-        $select->bindParam(':tableValue', $value);
-        $select->bindParam(':id', $id);
-        $select->execute();
-        
-        return $select->fetchAll(PDO::FETCH_ASSOC);
+        $selectStm = $this->conn->prepare($selectQuery);
+        $selectStm->bindParam(':tableValue', $value);
+        $selectStm->bindParam(':id', $id);
+        $selectStm->execute();
     }
 
-    public DeleteTable($tableRow, $rowId){
-        $row = filter_var($tableRow, FILTER_SANITIZE_STRING);
+    public function deleteRecord($rowId){
         $id = filter_var($rowId, FILTER_SANITIZE_STRING);
 
         $deleteQuery = "
-            DELETE :tableRow
+            DELETE FROM users
             WHERE id = :id
         ";
 
-        $delete = $conn->prepare($deleteQuery);
-        $delete->bindParam(':tableRow', $row);
-        $delete->bindParam(':id', $id);
-        $delete->execute();
+        $deleteStm = $this->conn->prepare($deleteQuery);
+        $deleteStm->bindParam(':id', $id);
+        $deleteStm->execute();
     }
 }
 

@@ -1,48 +1,45 @@
 <?php
 
 class User {
-    private $id;
-    private $username;
-    private $email;
-    private $role;
+    private $id, $username, $email, $role;
 
-    public User ($id, $username, $email, $role){
-        this->$id = $id;
-        this->$username = $username;
-        this->$email = $email;
-        this->$role = $role;
+    public function __construct($id, $username, $email, $role){
+        $this->id = $id;
+        $this->username = $username;
+        $this->email = $email;
+        $this->role = $role;
     }
 
-    public setId($id){
-        this->$id = $id;
+    public function setId($id){
+        $this->id = $id;
     }
 
-    public getId(){
-        return $id;
+    public function getId(){
+        return $this->id;
     }
 
-    public setUsername($username){
-        this->$username = $username;
+    public function setUsername($username){
+        $this->username = $username;
     }
 
-    public getUsername(){
-        return $username;
+    public function getUsername(){
+        return $this->username;
     }
 
-    public getEmail($email){
-        this->$email = $email;
+    public function setEmail($email){
+        $this->email = $email;
     }
 
-    public getEmail(){
-        return $email;
+    public function getEmail(){
+        return $this->email;
     }
 
-    public getRole($role){
-        this->$role = $role;
+    public function setRole($role){
+        $this->role = $role;
     }
 
-    public getRole(){
-        return $role;
+    public function getRole(){
+        return $this->role;
     }
 }
 
