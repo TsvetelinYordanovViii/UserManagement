@@ -15,17 +15,20 @@ class Database {
         }
     }
 
-    public function createRecord($newValues){
-        $values = filter_var($newValues, FILTER_SANITIZE_STRING);
+    public function createRecord($username, $email, $role){
+        $newUsername = filter_var($username, FILTER_SANITIZE_STRING);
+        $newEmail = filter_var($email, FILTER_SANITIZE_STRING);
+        $newRole = filter_var($role, FILTER_SANITIZE_STRING);
 
         $createQuery = "
-            INSERT INTO users (
-                (username, email, role) VALUES (:values)
-            )
+            INSERT INTO users
+                (username, email, role) VALUES (:newUsername, :newEmail, :newRole)
         ";
 
         $createStm = $this->conn->prepare($createQuery);
-        $createStm->bindParam(':values', $values);
+        $createStm->bindParam(':newUsername', $newUsername);
+        $createStm->bindParam(':newEmail', $newEmail);
+        $createStm->bindParam(':newRole', $newRole);
         $createStm->execute();
     }
 

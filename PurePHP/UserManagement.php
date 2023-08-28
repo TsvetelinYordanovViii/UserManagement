@@ -27,7 +27,7 @@ class UserManagement {
             return "Invalid email.";
         }
         else{
-            $database->createRecord("$username, $email, $role");
+            $database->createRecord($username, $email, $role);
             return "User added successfully.";
         }
     }
@@ -50,10 +50,10 @@ class UserManagement {
         else if ((strpos($email, "@")!=strrpos($email, "@") && (strpos($email, ".")!=strrpos($email, "."))) || strpos($email, "@")==-1 || strpos($email, ".")==-1){
             return "Invalid email.";
         }
-        else if ($id > 0){
+        else if ($id < 0){
             return "Invalid ID.";
         }
-        else if (sizeof($foundUser)>0){
+        else if (sizeof($foundUser)==0){
             return "User doesn't exist.";
         }
         else{
@@ -65,7 +65,7 @@ class UserManagement {
     public static function findUser ($idField, $database){
         $id = filter_var($idField, FILTER_SANITIZE_STRING);
 
-        if ($id > 1){
+        if ($id > 0){
             $userData = $database->readRecord($id);
 
             if (sizeof($userData)>0){
@@ -84,7 +84,7 @@ class UserManagement {
     public static function deleteUser ($idField, $database){
         $id = filter_var($idField, FILTER_SANITIZE_STRING);
 
-        if ($id > 1){
+        if ($id > 0){
             $foundUser = $database->readRecord($id);
             if (sizeof($foundUser)>0){
                 $database->deleteRecord($id);
