@@ -5,16 +5,16 @@ $usersDb = UserManagement::connect("localhost", "usermanagement", "root", "");
 $message = array("", "", "", "");
 
 if (isset($_POST["add-user"])){
-    $message[0] = UserManagement::addUser($_POST["username"], $_POST["email"], $_POST["role"]);
+    $message[0] = UserManagement::addUser($_POST["username"], $_POST["email"], $_POST["role"], $usersDb);
 }
 else if (isset($_POST["update-user"])){
-    $message[1] = UserManagement::updateUser($_POST["username"], $_POST["email"], $_POST["role"], $_POST["id"]);
+    $message[1] = UserManagement::updateUser($_POST["username"], $_POST["email"], $_POST["role"], $_POST["id"], $usersDb);
 }
 else if (isset($_POST["find-user"])){
-    $message[2] = UserManagement::findUser($_POST["id"]);
+    $message[2] = UserManagement::findUser($_POST["id"], $usersDb);
 }
 else if (isset($_POST["delete-user"])){
-    $message[3] = UserManagement::deleteUser($_POST["id"]);
+    $message[3] = UserManagement::deleteUser($_POST["id"], $usersDb);
 }
 
 ?>

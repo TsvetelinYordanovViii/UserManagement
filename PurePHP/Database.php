@@ -15,14 +15,12 @@ class Database {
         }
     }
 
-    public function createRecord($tableColumns, $newValues){
-        $columns = filter_var($tableColumns, FILTER_SANITIZE_STRING);
+    public function createRecord($newValues){
         $values = filter_var($newValues, FILTER_SANITIZE_STRING);
 
-        //The column names will be predefined, so there is no security concern here.
         $createQuery = "
             INSERT INTO users (
-                ($columns) VALUES (:values)
+                (username, email, role) VALUES (:values)
             )
         ";
 
