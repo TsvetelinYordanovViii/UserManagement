@@ -18,13 +18,16 @@ class UserManagement {
         $role = strtolower($role);
 
         if (empty($username) || empty($email) || empty($role)){
-            echo "At least one field is empty.";
+            return "At least one field is empty.";
         }
         else if ($role!="user" && $role!="admin"){
-            echo "Invalid user role.";
+            return "Invalid user role.";
         }
         else if ((strpos($email, "@")!=strrpos($email, "@") && (strpos($email, ".")!=strrpos($email, "."))) || strpos($email, "@")==-1 || strpos($email, ".")==-1){
-            echo "Invalid email.";
+            return "Invalid email.";
+        }
+        else{
+            return "User added successfully.";
         }
     }
 
@@ -36,13 +39,13 @@ class UserManagement {
         $role = strtolower($role);
 
         if (empty($username) || empty($email) || empty($role)){
-            echo "At least one field is empty.";
+            return "At least one field is empty.";
         }
         else if ($role!="user" && $role!="admin"){
-            echo "Invalid user role.";
+            return "Invalid user role.";
         }
         else if ((strpos($email, "@")!=strrpos($email, "@") && (strpos($email, ".")!=strrpos($email, "."))) || strpos($email, "@")==-1 || strpos($email, ".")==-1){
-            echo "Invalid email.";
+            return "Invalid email.";
         }
     }
 
@@ -52,7 +55,7 @@ class UserManagement {
         if ($id > 1){
         }
         else{
-            echo "Invalid ID.";
+            return "Invalid ID.";
         }
     }
 
@@ -62,7 +65,7 @@ class UserManagement {
         if ($id > 1){
         }
         else{
-            echo "Invalid ID.";
+            return "Invalid ID.";
         }
     }
 
