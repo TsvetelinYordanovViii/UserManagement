@@ -3,6 +3,7 @@ include "PurePHP/UserManagement.php";
 
 $usersDb = UserManagement::connect("localhost", "usermanagement", "root", "");
 $message = array("", "", "", "");
+$foundUser = new User("", "", "", "");
 
 if (isset($_POST["add-user"])){
     $message[0] = UserManagement::addUser($_POST["username"], $_POST["email"], $_POST["role"], $usersDb);
@@ -11,7 +12,12 @@ else if (isset($_POST["update-user"])){
     $message[1] = UserManagement::updateUser($_POST["username"], $_POST["email"], $_POST["role"], $_POST["id"], $usersDb);
 }
 else if (isset($_POST["find-user"])){
-    $message[2] = UserManagement::findUser($_POST["id"], $usersDb);
+    $result = UserManagement::findUser($_POST["id"], $usersDb);
+    if (isset($result[1][0]["id"])){
+        $foundUser = new User($result[1][0]["id"], $result[1][0]["username"], $result[1][0]["email"],$result[1][0]["role"]);
+    }
+    
+    $message[2] = $result[0];
 }
 else if (isset($_POST["delete-user"])){
     $message[3] = UserManagement::deleteUser($_POST["id"], $usersDb);
@@ -40,11 +46,11 @@ else if (isset($_POST["delete-user"])){
             <label class="mt-1" for=""><?php echo $message[0] ?></label>
         </form>
         <form class="m-5 d-flex flex-column align-items-center" id="update" action="" method="post">
-            <input class="form-control mb-2" name="username" type="text" placeholder="Username">
-            <input class="form-control mb-2" name="email" type="email" placeholder="Email">
-            <input class="form-control mb-2" name="role" type="text" placeholder="Role">
-            <input class="form-control mb-2" name="id" type="number" placeholder="ID">
-            <input class="submit-btn form-control" name="update-user" type="submit" value="Add User">
+            <input class="form-control mb-2" name="username" type="text" placeholder="Username" value="<?php echo $foundUser->getUsername()?>">
+            <input class="form-control mb-2" name="email" type="email" placeholder="Email" value="<?php echo $foundUser->getEmail()?>">
+            <input class="form-control mb-2" name="role" type="text" placeholder="Role" value="<?php echo $foundUser->getRole()?>">
+            <input class="form-control mb-2" name="id" type="number" placeholder="ID" value="<?php echo $foundUser->getId()?>">
+            <input class="submit-btn form-control" name="update-user" type="submit" value="Update User">
 
             <label class="mt-1" for=""><?php echo $message[1] ?></label>
         </form>

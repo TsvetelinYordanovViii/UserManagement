@@ -50,6 +50,9 @@ class UserManagement {
         else if ((strpos($email, "@")!=strrpos($email, "@") && (strpos($email, ".")!=strrpos($email, "."))) || strpos($email, "@")==-1 || strpos($email, ".")==-1){
             return "Invalid email.";
         }
+        else if ($id > 0){
+            return "Invalid ID.";
+        }
         else if (sizeof($foundUser)>0){
             return "User doesn't exist.";
         }
@@ -63,12 +66,19 @@ class UserManagement {
         $id = filter_var($idField, FILTER_SANITIZE_STRING);
 
         if ($id > 1){
-            $database->readRecord($id);
-            return "User found.";
+            $userData = $database->readRecord($id);
+
+            if (sizeof($userData)>0){
+                $output = array("User found. Data displayed on the Update User form.", $userData);
+            }
+            else{
+                $output = array("User not found.", null);
+            }
         }
         else{
-            return "Invalid ID.";
+            $output = array("Invalid ID.", null);
         }
+        return $output;
     }
 
     public static function deleteUser ($idField, $database){
