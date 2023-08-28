@@ -32,31 +32,23 @@ class Database {
         $createStm->execute();
     }
 
-    public function readRecord($tableColumn, $whereColumn, $whereValue){
-        //If no column is set, provide the * character.
-        if (strlen($tableColumn) > 0){
-            $columns = filter_var($tableColumn, FILTER_SANITIZE_STRING);
-        }
-        else{
-            $columns = "*";
-        }
+    public function readRecord($id){
 
         //If a where clause is defined, create a query with a where clause
         //else create a simple select query.
-        if (strlen($whereColumn) > 0 && strlen($whereValue) > 0){
-            $checkedColumn = filter_var($whereColumn, FILTER_SANITIZE_STRING);
-            $checkedValue = filter_var($whereValue, FILTER_SANITIZE_STRING);
+        if (strlen($id) > 0){
+            $searchedId = filter_var($id, FILTER_SANITIZE_STRING);
 
             $selectQuery = "
-            SELECT $columns FROM users
-            WHERE $checkedColumn = :checkedValue
+            SELECT * FROM users
+            WHERE id = :searchedId
             ";
             $selectStm = $this->conn->prepare($selectQuery);
-            $selectStm->bindParam(':checkedValue', $checkedValue);
+            $selectStm->bindParam(':searchedId', $searchedId);
         }
         else{
             $selectQuery = "
-            SELECT $columns FROM users
+            SELECT * FROM users
             ";
             $selectStm = $this->conn->prepare($selectQuery);
         }
@@ -66,20 +58,22 @@ class Database {
         return $selectStm->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function updateRecord($tableColumn, $tableValue, $rowId){
-        $column = filter_var($tableColumn, FILTER_SANITIZE_STRING);
-        $value = filter_var($tableValue, FILTER_SANITIZE_STRING);
+    public function updateRecord($username, $email, $role, $rowId){
+        $newUsername = filter_var($username, FILTER_SANITIZE_STRING);
+        $newEmail = filter_var($email, FILTER_SANITIZE_STRING);
+        $newRole = filter_var($role, FILTER_SANITIZE_STRING);
         $id = filter_var($rowId, FILTER_SANITIZE_STRING);
         
-        //The column names will be predefined, so there is no security concern here.
         $selectQuery = "
             UPDATE users
-            SET $column = :tableValue
+            SET username = :newUsername, email = :newEmail, role = :newRole
             WHERE id = :id
         ";
 
         $selectStm = $this->conn->prepare($selectQuery);
-        $selectStm->bindParam(':tableValue', $value);
+        $selectStm->bindParam(':newUsername', $newUsername);
+        $selectStm->bindParam(':newEmail', $newEmail);
+        $selectStm->bindParam(':newRole', $newRole);
         $selectStm->bindParam(':id', $id);
         $selectStm->execute();
     }
