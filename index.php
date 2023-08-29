@@ -12,8 +12,6 @@ if (!isset($_SESSION["currentUser"])){
 }
 
 if (isset($_POST["add-user"])){
-    $test = $_SESSION["currentUser"]->getRole();
-    echo "<script>alert('$test')</script>";
     $message[0] = UserManagement::addUser($_POST["username"], $_POST["email"], $_POST["role"], $usersDb, $_SESSION["currentUser"]);
 }
 else if (isset($_POST["update-user"])){
