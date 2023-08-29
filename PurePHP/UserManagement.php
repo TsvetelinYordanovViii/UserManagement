@@ -10,14 +10,17 @@ class UserManagement {
         return $db;
     }
 
-    public static function addUser ($usernameField, $emailField, $roleField, $database){
+    public static function addUser ($usernameField, $emailField, $roleField, $database, $currentUser){
         $username = filter_var($usernameField, FILTER_SANITIZE_STRING);
         $email = filter_var($emailField, FILTER_SANITIZE_STRING);
         $role = filter_var($roleField, FILTER_SANITIZE_STRING);
 
         $role = strtolower($role);
 
-        if (empty($username) || empty($email) || empty($role)){
+        if ($currentUser->getRole()!="admin"){
+            return "You are not allowed to add new users.";
+        }
+        else if (empty($username) || empty($email) || empty($role)){
             return "At least one field is empty.";
         }
         else if ($role!="user" && $role!="admin"){
@@ -32,7 +35,7 @@ class UserManagement {
         }
     }
 
-    public static function updateUser ($usernameField, $emailField, $roleField, $idField, $database){
+    public static function updateUser ($usernameField, $emailField, $roleField, $idField, $database, $currentUser){
         $username = filter_var($usernameField, FILTER_SANITIZE_STRING);
         $email = filter_var($emailField, FILTER_SANITIZE_STRING);
         $role = filter_var($roleField, FILTER_SANITIZE_STRING);
@@ -41,7 +44,10 @@ class UserManagement {
         $foundUser = $database->readRecord($id);
         $role = strtolower($role);
 
-        if (empty($username) || empty($email) || empty($role)){
+        if ($currentUser->getRole()!="admin"){
+            return "You are not allowed to update user data.";
+        }
+        else if (empty($username) || empty($email) || empty($role)){
             return "At least one field is empty.";
         }
         else if ($role!="user" && $role!="admin"){
@@ -81,10 +87,13 @@ class UserManagement {
         return $output;
     }
 
-    public static function deleteUser ($idField, $database){
+    public static function deleteUser ($idField, $database, $currentUser){
         $id = filter_var($idField, FILTER_SANITIZE_STRING);
 
-        if ($id > 0){
+        if ($currentUser->getRole()!="admin"){
+            return "You are not allowed to delete users.";
+        }
+        else if ($id > 0){
             $foundUser = $database->readRecord($id);
             if (sizeof($foundUser)>0){
                 $database->deleteRecord($id);
